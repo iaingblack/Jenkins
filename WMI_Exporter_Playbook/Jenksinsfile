@@ -2,9 +2,9 @@ pipeline {
     agent {
         docker {
             label 'Docker && Linux'
-            image 'ghcr.io/iaingblack/Jenkins:master'
+            image 'ghcr.io/iaingblack/jenkins-ansible:master'
             registryUrl 'https://ghcr.io'
-            registryCredentialsId 'dockerregistrycreds'        
+            registryCredentialsId 'dockerregistrycreds'
         }
     }
     stages {
