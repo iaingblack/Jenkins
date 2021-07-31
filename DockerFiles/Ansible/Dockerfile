@@ -58,9 +58,9 @@ RUN set -x && \
     pip install xmltodict pywinrm
 
 RUN set -x && \
-    echo "==> Installing Ansible and Azure Collections..."  && \
+    echo "==> Installing Ansible, Azure and Chocolatey Collections..."  && \
     pip install ansible==${ANSIBLE_VERSION} && \
-    ansible-galaxy collection install azure.azcollection:==1.2.0 --ignore-cert
+    ansible-galaxy collection install azure.azcollection chocolatey.chocolatey --ignore-cert
 
 RUN set -x && \
     echo "==> Adding hosts for convenience..."  && \

@@ -1,0 +1,7 @@
+---
+- name: Install Chocolatey Packages
+  hosts: servers
+  tasks:
+    - name: Install notepadplusplus
+      win_chocolatey:
+        name: notepadplusplus

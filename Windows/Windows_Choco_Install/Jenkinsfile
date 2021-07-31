@@ -1,0 +1,43 @@
+pipeline {
+    agent {
+        docker {
+            label 'Docker && Linux'
+            image 'ghcr.io/iaingblack/jenkins-ansible:master'
+            registryUrl 'https://ghcr.io'
+            registryCredentialsId 'dockerregistrycreds'
+        }
+    }
+    stages {
+        stage('Clone Git') {
+            steps {
+                git url: 'https://github.com/iaingblack/Jenkins.git', branch: 'master', credentialsId: 'ib_github_repo_ro'
+            }
+        }
+        stage('Show We Have Pulled the Repo') {
+            steps {
+                sh "ls -lah"
+            }
+        }
+        stage('Check Ansible is Installed') {
+            steps {
+                sh "ansible --version"
+            }
+        }
+        stage('Run Against VMs') {
+            steps {
+                script {
+                    dir("${env.WORKSPACE}/Windows/Windows_Choco_Install"){
+                        sh "touch ./variables/hosts.yml"
+                        sh "echo '[servers]' > ./variables/hosts.yml"
+                        def vms_split = VMs.split(',')
+                        for (vm in vms_split) {
+                            sh "echo '${vm}' >> ./variables/hosts.yml"
+                        }
+                        sh "cat ./variables/hosts.yml"
+                        sh "ansible-playbook playbooks/install-choco-packages.yml -i ./variables/hosts.yml -e ansible_user=${VMUsername} -e ansible_password='${VMPassword}'"
+                    }
+                }
+            }
+        }
+    }
+}
