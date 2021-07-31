@@ -26,7 +26,7 @@ pipeline {
         stage('Run Against VMs') {
             steps {
                 script {
-                    dir("${env.WORKSPACE}/AnsiblePipeline"){
+                    dir("${env.WORKSPACE}/WMI_Exporter_Playbook"){
                         sh "touch ./variables/hosts.yml"
                         sh "echo '[servers]' > ./variables/hosts.yml"
                         def vms_split = VMs.split(',')
