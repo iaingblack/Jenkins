@@ -1,0 +1,20 @@
+pipeline {                           // We are using a declarative pipeline
+    agent {                          // We want to use an agent/node
+        docker {                     // We want to use docker for this
+            image 'alpine'           // The docker image to run in
+            label 'Docker && Linux'  // Use a node/agent with this label
+        }
+    }
+    stages {                        // We want to define our job stages
+        stage('Echo Hostname') {    // Just a name for this stage
+            steps {                 // What we will run
+                sh "hostname"       // Echo the hostname to prove we are running in a container
+            }
+        }
+        stage('Echo pwd') {         // Just a name for this stage
+            steps {                 // What we will run
+                sh "pwd"            // Show our current folder
+            }
+        }
+    }
+}
