@@ -26,7 +26,7 @@ pipeline {
         stage('Run Against VMs') {
             steps {
                 script {
-                    dir("${env.WORKSPACE}/WMI_Exporter_Playbook"){
+                    dir("${env.WORKSPACE}/Prometheus/Windows_Exporter_Playbook"){
                         sh "touch ./variables/hosts.yml"
                         sh "echo '[servers]' > ./variables/hosts.yml"
                         def vms_split = VMs.split(',')
@@ -34,7 +34,7 @@ pipeline {
                             sh "echo '${vm}' >> ./variables/hosts.yml"
                         }
                         sh "cat ./variables/hosts.yml"
-                        sh "ansible-playbook playbooks/test.yml -i ./variables/hosts.yml -e ansible_user=${VMUsername} -e ansible_password='${VMPassword}'"
+                        sh "ansible-playbook playbooks/install-windows-exporter.yml -i ./variables/hosts.yml -e ansible_user=${VMUsername} -e ansible_password='${VMPassword}'"
                     }
                 }
             }

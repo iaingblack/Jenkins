@@ -1,0 +1,25 @@
+---
+- name: Install Windows Exporter
+  hosts: servers
+  vars:
+    windows_exporter_download_folder: c:\Windows-Exporter
+    windows_exporter_installer_url: https://github.com/prometheus-community/windows_exporter/releases/download/v0.16.0/
+    windows_exporter_installer_filename: windows_exporter-0.16.0-amd64.msi
+  tasks:
+    - name: Create Windows-Exporter Folder
+      win_file:
+        path: "{{ windows_exporter_download_folder }}"
+        state: directory
+
+    - name: "Download {{ windows_exporter_installer_url }}\\{{ windows_exporter_installer_filename }} to specified path"
+      win_get_url:
+        url:  "{{ windows_exporter_installer_url }}\\{{ windows_exporter_installer_filename }}"
+        dest: "C:\\Windows-Exporter\\{{ windows_exporter_installer_filename }}"
+        proxy_username: "{{ ansible_user }}"
+        proxy_password: "{{ ansible_password }}"
+
+    - name: Install the Windows Exporter
+      win_package:
+        path: "C:\\Windows-Exporter\\{{ windows_exporter_installer_filename }}"
+        state: present
+        wait_for_children: true
