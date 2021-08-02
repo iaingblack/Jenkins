@@ -60,7 +60,7 @@ RUN set -x && \
 RUN set -x && \
     echo "==> Installing Ansible, Azure and Chocolatey Collections..."  && \
     pip install ansible==${ANSIBLE_VERSION} && \
-    ansible-galaxy collection install azure.azcollection chocolatey.chocolatey --ignore-cert
+    ansible-galaxy collection install azure.azcollection=${AZURE_COLLECTION} chocolatey.chocolatey --ignore-cert
 
 RUN set -x && \
     echo "==> Adding hosts for convenience..."  && \
