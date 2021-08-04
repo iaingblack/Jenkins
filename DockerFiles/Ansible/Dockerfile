@@ -39,6 +39,11 @@ RUN set -x && \
     echo "==> Adding system packages..."  && \
     apt-get install -y ${BUILD_PACKAGES}
 
+RUN set -x && \
+    echo "==> Adding python libs"  && \
+    pip install --upgrade pip && \
+    pip install xmltodict pywinrm
+    
 RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | \
     gpg --dearmor | \
     tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null
@@ -48,14 +53,7 @@ RUN AZ_REPO=$(lsb_release -cs) && \
     tee /etc/apt/sources.list.d/azure-cli.list
 
 # https://packages.microsoft.com/repos/azure-cli/pool/main/a/azure-cli/
-# Frontdoor not installed by default in the CLI. Remove the 2nd line when it is available
-RUN apt-get update && apt-get install -y azure-cli=2.10.0-1~stretch && \
-    az extension add --name front-door
-
-RUN set -x && \
-    echo "==> Adding python libs"  && \
-    pip install --upgrade pip && \
-    pip install xmltodict pywinrm
+RUN apt-get update && apt-get install -y azure-cli 
 
 RUN set -x && \
     echo "==> Installing Ansible, Azure and Chocolatey Collections..."  && \
@@ -63,26 +61,26 @@ RUN set -x && \
     ansible-galaxy collection install azure.azcollection:==${AZURE_COLLECTION} chocolatey.chocolatey --ignore-cert
 
 RUN set -x && \
+    echo "==> Adding Azure libraries - azure.mgmt.privatedns seems missing from ansible[azure] right now"  && \
+    pip install cryptography>=2.3 openshift 'ansible[azure]' jq azure.mgmt.privatedns
+    
+RUN set -x && \
     echo "==> Adding hosts for convenience..."  && \
     mkdir -p /etc/ansible /ansible && \
     echo "[local]" >> /etc/ansible/hosts && \
     echo "localhost" >> /etc/ansible/hosts
 
 RUN set -x && \
-    echo "==> Adding Azure libraries - azure.mgmt.privatedns seems missing from ansible[azure] right now"  && \
-    pip install cryptography>=2.3 openshift 'ansible[azure]' jq azure.mgmt.privatedns
-
-RUN set -x && \
-    echo "==> Adding Powershell Core to Use Invoke-RestMethod Later"  && \
+    echo "==> Adding Powershell Core"  && \
     apt-get install -y curl gnupg apt-transport-https && \
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
     sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-debian-stretch-prod stretch main" > /etc/apt/sources.list.d/microsoft.list' && \
     apt-get update && \
     apt-get install -y powershell
 
-# RUN set -x && \
-#     echo "==> Install Az Cmdlets"  && \
-#     pwsh -command Install-Module -Name Az -Repository PSGallery -Force
+RUN set -x && \
+    echo "==> Install Az Cmdlets"  && \
+    pwsh -command Install-Module -Name Az -Repository PSGallery -Force
 
 RUN set -x && \
     echo "==> Cleaning up..."  && \
